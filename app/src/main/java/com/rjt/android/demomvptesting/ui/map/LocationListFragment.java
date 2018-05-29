@@ -19,9 +19,9 @@ public class LocationListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_location_list, container, false);
         mRecyclerView = view.findViewById(R.id.recyclerview);
-        MyLocationAdapter locationAdapter = new MyLocationAdapter(DataManager.getExample().getResults(), getActivity());
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), layoutManager.getOrientation());
+//        MyLocationAdapter locationAdapter = new MyLocationAdapter(DataManager.getExample().getResults(), getActivity());
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), layoutManager.getOrientation());
         return view;
     }
     public static LocationListFragment newInstance(){

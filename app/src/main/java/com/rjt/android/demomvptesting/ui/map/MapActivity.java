@@ -18,11 +18,12 @@ import com.rjt.android.demomvptesting.data.repository.remote.RemoteDataSource;
 
 import de.greenrobot.event.EventBus;
 
-public class MapActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener{
+public class MapActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener, MapActivityContract.IView{
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private DataManager dataManager;
     private SearchView editSearch;
+    private MapActivityContract.IPresenter mPresenter;
     private String query;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +32,8 @@ public class MapActivity extends AppCompatActivity implements TabLayout.OnTabSel
         mTabLayout = findViewById(R.id.tablayout);
         editSearch = findViewById(R.id.searchview);
         mViewPager = findViewById(R.id.pager);
-        mTabLayout.addTab(mTabLayout.newTab().setText("List"));
         mTabLayout.addTab(mTabLayout.newTab().setText("Map"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("List"));
         MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager(), 2, MapActivity.this);
         mTabLayout.addOnTabSelectedListener(this);
         mViewPager.setAdapter(adapter);
@@ -44,7 +45,7 @@ public class MapActivity extends AppCompatActivity implements TabLayout.OnTabSel
             @Override
             public boolean onQueryTextSubmit(String query)
             {
-               // dataManager.getRemoteLocationData(query, ll, 5000);
+                dataManager.getRemoteLocationData(query, ll, 5000);
                 EventBus.getDefault().post(query);
                 Toast.makeText(MapActivity.this, query, Toast.LENGTH_SHORT).show();
                 editSearch.clearFocus();
@@ -77,4 +78,8 @@ public class MapActivity extends AppCompatActivity implements TabLayout.OnTabSel
     }
 
 
+    @Override
+    public void setPresenter(MapActivityContract.IPresenter presenter) {
+        mPresenter = presenter;
+    }
 }

@@ -37,7 +37,7 @@ public class SimpleMapFragment extends Fragment implements OnMapReadyCallback, S
     public void onEvent(String query){
         this.query = query;
         Log.i("MapFragment", "onEvent: " +  query);
-        googleMap.clear();
+        //googleMap.clear();
        // DataManager.setExample(null);
         simpleMapPresenter.setOnMapReady(query, googleMap);
     }
@@ -58,6 +58,7 @@ public class SimpleMapFragment extends Fragment implements OnMapReadyCallback, S
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+       // this.simpleMapPresenter.setOnMapReady(query, googleMap);
         Log.d("SimpleMapFragment", "onMapReady: ");
 
     }
