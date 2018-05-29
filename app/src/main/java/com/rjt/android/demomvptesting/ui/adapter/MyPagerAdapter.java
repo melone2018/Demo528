@@ -23,12 +23,11 @@ public class MyPagerAdapter extends FragmentStatePagerAdapter{
     public Fragment getItem(int position) {
         switch(position){
             case 0:
-                LocationListFragment tab1 = LocationListFragment.newInstance();
-                return tab1;
-
-            case 1:
                 SimpleMapFragment tab2 = SimpleMapFragment.newInstance(new SimpleMapPresenter(this.context));
                 return tab2;
+            case 1:
+                LocationListFragment tab1 = LocationListFragment.newInstance();
+                return tab1;
             default:
                 return null;
         }
