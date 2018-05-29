@@ -7,6 +7,7 @@ import com.rjt.android.demomvptesting.R;
 import com.rjt.android.demomvptesting.data.api.GoogleNearbyApiService;
 import com.rjt.android.demomvptesting.data.api.RetrofitHelper;
 import com.rjt.android.demomvptesting.data.model.bank.Example;
+import com.rjt.android.demomvptesting.data.repository.DataManager;
 import com.rjt.android.demomvptesting.data.repository.IDataSource;
 
 import io.reactivex.Observable;
@@ -34,6 +35,8 @@ public class RemoteDataSource implements IDataSource {
 
                     @Override
                     public void onNext(Example example) {
+                        DataManager.setExample(null);
+                        DataManager.setExample(example);
                         Log.i(TAG, "onNext: ");
                     }
 
@@ -44,6 +47,9 @@ public class RemoteDataSource implements IDataSource {
 
                     @Override
                     public void onComplete() {
+                        //DataManager.setExample(null);
+
+                        Log.i(type+": ", DataManager.getExample().getResults().size()+"");
                         Log.i(TAG, "onComplete: ");
                     }
                 });
