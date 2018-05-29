@@ -52,7 +52,7 @@ public class SimpleMapPresenter implements SimpleMapContract.IPresenter {
             mlocation = location;
             Log.i("getLoc", "Location: " + mlocation.getLatitude() + " " + mlocation.getLongitude());
             LatLng currentLoc = new LatLng(mlocation.getLatitude(),mlocation.getLongitude());
-            dataManager.getRemoteLocationData(newQuery, currentLoc, 5000);
+           dataManager.getRemoteLocationData(newQuery, currentLoc, 5000);
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 16));
         }
 
@@ -88,9 +88,6 @@ public class SimpleMapPresenter implements SimpleMapContract.IPresenter {
         this.googleMap = googleMap;
         getDeviceLocation(googleMap);
         newQuery = query;
-        //Log.i("LOCATION", mlocation.getLatitude() + " " + mlocation.getLongitude());
-//        LatLng currentLoc = new LatLng(mlocation.getLatitude(),mlocation.getLongitude());
-//        dataManager.getRemoteLocationData(query, currentLoc, 5000);
     }
 
 
@@ -108,14 +105,9 @@ public class SimpleMapPresenter implements SimpleMapContract.IPresenter {
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 50, 5, mLocationListener);
             setMarkers();
-//            if(mlocation!=null)
-//                return new LatLng(mlocation.getLatitude(), mlocation.getLongitude());
-
         } catch (SecurityException e) {
             e.printStackTrace();
         }
-       // return new LatLng(mlocation.getLatitude(), mlocation.getLongitude());
-        //return null;
     }
 
     void setMarkers(){

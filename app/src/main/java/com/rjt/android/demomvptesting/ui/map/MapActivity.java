@@ -38,12 +38,13 @@ public class MapActivity extends AppCompatActivity implements TabLayout.OnTabSel
         mViewPager.setAdapter(adapter);
         LatLng ll = new LatLng(41.91419, -88.30869);
         dataManager = DataManager.getDataManager(new RemoteDataSource(), new LocalDataSource());
-        dataManager.getRemoteLocationData("bank", ll, 5000);
+        //dataManager.getRemoteLocationData("bank", ll, 5000);
         editSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
             @Override
             public boolean onQueryTextSubmit(String query)
             {
+               // dataManager.getRemoteLocationData(query, ll, 5000);
                 EventBus.getDefault().post(query);
                 Toast.makeText(MapActivity.this, query, Toast.LENGTH_SHORT).show();
                 editSearch.clearFocus();
