@@ -1,8 +1,13 @@
 package com.rjt.android.demomvptesting.ui.map;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -36,7 +41,7 @@ import de.greenrobot.event.EventBus;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
-public class SimpleMapFragment extends Fragment implements OnMapReadyCallback, SimpleMapContract.IView {
+public class SimpleMapFragment extends Fragment implements OnMapReadyCallback, SimpleMapContract.IView, LocationListener {
     private GoogleMap googleMap;
     private SupportMapFragment mapFragment;
     private LatLng latLng;
@@ -45,7 +50,8 @@ public class SimpleMapFragment extends Fragment implements OnMapReadyCallback, S
     private int REQUEST_FINE_LOCATION = 8809;
     private LocationRequest mLocationRequest;
     LocationCallback callback;
-
+    LocationManager mLocationManager;
+    String newQuery = "";
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -53,6 +59,7 @@ public class SimpleMapFragment extends Fragment implements OnMapReadyCallback, S
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_simplemap, container, false);
+        LocationUtils();
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.simpelmap);
         mapFragment.getMapAsync(this);
         return view;
@@ -61,20 +68,21 @@ public class SimpleMapFragment extends Fragment implements OnMapReadyCallback, S
     public static SimpleMapFragment newInstance(SimpleMapPresenter mapPresenter) {
         simpleMapPresenter = mapPresenter;
         SimpleMapFragment mapFragment = new SimpleMapFragment();
+//        Log.i("ManageSize", DataManager.getExample().getResults().size()+"");
         return mapFragment;
     }
 
     public void onEvent(String query) {
         this.query = query;
+        this.newQuery = query;
         Log.i("MapFragment", "onEvent: " + query);
     }
-
-
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
     }
+
 
     @Override
     public void onPause() {
@@ -90,13 +98,9 @@ public class SimpleMapFragment extends Fragment implements OnMapReadyCallback, S
                 return;
             }
         googleMap.setMyLocationEnabled(true);
-        //this.simpleMapPresenter.setOnMapReady(query, googleMap,latlng);
-        Log.d("SimpleMapFragment", "onMapReady: " );
-        startLocationUpdates();
-       // Log.i("location", latLng.latitude + "");
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
-//        this.simpleMapPresenter.setOnMapReady(query, googleMap,latLng);
-
+        Log.d("SimpleMapFragment", "onMapReady: ");
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        this.simpleMapPresenter.setOnMapReady(this.newQuery, googleMap, latLng);
     }
 
     @Override
@@ -104,15 +108,6 @@ public class SimpleMapFragment extends Fragment implements OnMapReadyCallback, S
         this.simpleMapPresenter = presenter;
     }
 
-
-    public void onLocationChanged(Location location) {
-        latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        Log.i("location", latLng.latitude + "");
-        mFusedLocationProviderClient.removeLocationUpdates(callback);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-        this.simpleMapPresenter.setOnMapReady(query, googleMap,latLng);
-
-    }
 
     private boolean checkPermissions() {
         if (ContextCompat.checkSelfPermission(getActivity(),
@@ -130,45 +125,44 @@ public class SimpleMapFragment extends Fragment implements OnMapReadyCallback, S
                 REQUEST_FINE_LOCATION);
     }
 
-    protected void startLocationUpdates() {
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.i("simpleMapFragment", location.getLatitude() + "");
+        latLng = new LatLng(location.getLatitude(), location.getLongitude());
+    }
 
-        // Create the location request to start receiving updates
-        mLocationRequest = new LocationRequest();
-       // mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        //mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
 
-        // Create LocationSettingsRequest object using location request
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(mLocationRequest);
-        LocationSettingsRequest locationSettingsRequest = builder.build();
+    }
 
-        // Check whether location settings are satisfied
-        // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
-        SettingsClient settingsClient = LocationServices.getSettingsClient(getActivity());
-        settingsClient.checkLocationSettings(locationSettingsRequest);
+    @Override
+    public void onProviderEnabled(String provider) {
 
-        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    public void LocationUtils() {
+        Context context = getActivity();
+        // Get the location manager
+        mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        // Define the criteria how to select the locatioin provider -> use
+        // default
+        Criteria criteria = new Criteria();
+        String provider = mLocationManager.getBestProvider(criteria, false);
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        mFusedLocationProviderClient = getFusedLocationProviderClient(getActivity());
-        callback = new LocationCallback(){
-            @Override
-            public void onLocationResult(LocationResult locationResult){
-                super.onLocationResult(locationResult);
-                onLocationChanged(locationResult.getLastLocation());
-            }
-        };
-        mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, callback, Looper.myLooper());
+        Location location = mLocationManager.getLastKnownLocation(provider);
 
-        mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, new LocationCallback() {
-                    @Override
-                    public void onLocationResult(LocationResult locationResult) {
-                        // do work here
-                        onLocationChanged(locationResult.getLastLocation());
-                    }
-                },
-                Looper.myLooper());
+        // Initialize the location fields
+        if (location != null) {
+            onLocationChanged(location);
+        } else {
+        }
     }
 }

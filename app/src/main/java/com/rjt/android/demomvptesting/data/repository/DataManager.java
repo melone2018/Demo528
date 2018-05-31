@@ -17,7 +17,7 @@ public class DataManager implements IDataSource{
         example = example2;
     }
 
-    private static Example example=null;
+    private static Example example=new Example();
     private static DataManager dataManager = null;
     private DataManager(RemoteDataSource remoteDataSource, LocalDataSource localDataSource){
         this.remoteDataSource = remoteDataSource;

@@ -40,6 +40,7 @@ public class RemoteDataSource implements IDataSource {
                         //DataManager.setExample(null);
                         DataManager.setExample(example);
                         Log.i(TAG, "onNext: ");
+                        remoteCallBack.onSuccess();
                     }
 
                     @Override

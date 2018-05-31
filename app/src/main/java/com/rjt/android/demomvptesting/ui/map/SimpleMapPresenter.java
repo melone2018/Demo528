@@ -1,16 +1,9 @@
 package com.rjt.android.demomvptesting.ui.map;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -24,11 +17,11 @@ import com.rjt.android.demomvptesting.data.repository.remote.RemoteDataSource;
 import java.util.List;
 
 public class SimpleMapPresenter implements SimpleMapContract.IPresenter {
-    private Context context;
     DataManager dataManager;
     String newQuery = "";
     GoogleMap googleMap;
     Location mLocation;
+    private Context context;
 
     public SimpleMapPresenter(Context context) {
         this.context = context;
@@ -42,25 +35,22 @@ public class SimpleMapPresenter implements SimpleMapContract.IPresenter {
 
     @Override
     public void setOnMapReady(String query, GoogleMap googleMap, LatLng ll) {
-        Log.i("MapPresenter", "setOnMapReady: " + query);
+        Log.i("MapPresenter", "setOnMapReady: " + query + " " + ll.longitude + " " + ll.latitude);
         this.googleMap = googleMap;
+
         googleMap.clear();
         dataManager.getRemoteLocationData(query, ll, 5000, new IDataSource.RemoteCallBack() {
             @Override
             public void onSuccess() {
-                Log.i("drawMarker", dataManager.getExample().getResults().size()+"");
-//                setMarkers();
+                Log.i("drawMarker", dataManager.getExample().getResults().size() + "");
+                setMarkers();
             }
         });
-        if(dataManager.getExample()!=null) {
-            Log.i("MapPresenter", dataManager.getExample().getResults().size() + "");
-            setMarkers();
-        }
     }
 
-    void setMarkers(){
+    void setMarkers() {
         List<Result> results = DataManager.getExample().getResults();
-        for(int i = 0; i < results.size(); i++){
+        for (int i = 0; i < results.size(); i++) {
             Result res = results.get(i);
             String iconUrl = res.getIcon();
             double lat = res.getGeometry().getLocation().getLat();
@@ -70,6 +60,7 @@ public class SimpleMapPresenter implements SimpleMapContract.IPresenter {
             MarkerOptions options = new MarkerOptions().title(name).position(ll);
             Marker m = googleMap.addMarker(options);
         }
+        ///dataManager.setExample(null);
     }
 
 }

@@ -55,7 +55,7 @@ public class MapActivity extends AppCompatActivity implements TabLayout.OnTabSel
                 EventBus.getDefault().post(query);
                 Toast.makeText(MapActivity.this, query, Toast.LENGTH_SHORT).show();
                 editSearch.clearFocus();
-                DataManager.setExample(null);
+               // DataManager.setExample(null);
                 return true;
             }
 
