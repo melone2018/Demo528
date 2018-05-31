@@ -19,9 +19,11 @@ import io.reactivex.schedulers.Schedulers;
 import static android.support.constraint.Constraints.TAG;
 
 public class RemoteDataSource implements IDataSource {
+    private static final String TAG="RemoteDataSource";
     private static final String GOOGLE_API_KEY = "AIzaSyBjzIx-qaBW1jIUECTJeHs7slsQiOnbzYc";
+
     @Override
-    public void getRemoteLocationData(String type, LatLng ll, int radius) {
+    public void getRemoteLocationData(String type, LatLng ll, int radius, RemoteCallBack remoteCallBack) {
         GoogleNearbyApiService googleNearbyApiService = RetrofitHelper.getRetrofitHelper().getGoogleNearbyApiService();
         String location = String.valueOf(ll.latitude) + ","+String.valueOf(ll.longitude);
         Observable<Example> exampleObservable = googleNearbyApiService.getNearbyLocations(location, radius, type, GOOGLE_API_KEY);
@@ -35,22 +37,21 @@ public class RemoteDataSource implements IDataSource {
 
                     @Override
                     public void onNext(Example example) {
-                        DataManager.setExample(null);
+                        //DataManager.setExample(null);
                         DataManager.setExample(example);
                         Log.i(TAG, "onNext: ");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Log.i(TAG, "on Error" + e.getMessage());
                     }
 
                     @Override
                     public void onComplete() {
-                        //DataManager.setExample(null);
-
-                        Log.i(type+": ", DataManager.getExample().getResults().size()+"");
                         Log.i(TAG, "onComplete: ");
+                        Log.i(type+": ", DataManager.getExample().getResults().size()+"");
+
                     }
                 });
     }

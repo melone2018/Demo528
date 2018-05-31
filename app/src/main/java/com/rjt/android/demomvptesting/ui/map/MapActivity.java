@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.TableLayout;
 import android.widget.Toast;
 
+import com.rjt.android.demomvptesting.data.repository.IDataSource;
 import com.rjt.android.demomvptesting.ui.adapter.MyPagerAdapter;
 import com.google.android.gms.maps.model.LatLng;
 import com.rjt.android.demomvptesting.R;
@@ -45,11 +46,16 @@ public class MapActivity extends AppCompatActivity implements TabLayout.OnTabSel
             @Override
             public boolean onQueryTextSubmit(String query)
             {
-                dataManager.getRemoteLocationData(query, ll, 5000);
+                dataManager.getRemoteLocationData(query, ll, 5000, new IDataSource.RemoteCallBack() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+                });
                 EventBus.getDefault().post(query);
                 Toast.makeText(MapActivity.this, query, Toast.LENGTH_SHORT).show();
                 editSearch.clearFocus();
-                //DataManager.setExample(null);
+                DataManager.setExample(null);
                 return true;
             }
 

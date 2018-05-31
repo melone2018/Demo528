@@ -11,6 +11,4 @@ public interface GoogleNearbyApiService {
                                            @Query("radius") int radius,
                                            @Query("types") String types,
                                            @Query("key") String key);
-
-
 }

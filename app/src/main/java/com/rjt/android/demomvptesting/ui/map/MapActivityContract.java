@@ -11,7 +11,6 @@ public interface MapActivityContract  {
 
     }
     interface IPresenter extends BasePresenter{
-        void zoomToCurrentLocation(Context context, GoogleMap googleMap);
         void getMapReady(Context mContext, String query, GoogleMap googleMap);
     }
 }

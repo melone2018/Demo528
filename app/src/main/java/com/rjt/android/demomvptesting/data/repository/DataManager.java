@@ -8,7 +8,7 @@ import com.rjt.android.demomvptesting.data.repository.remote.RemoteDataSource;
 public class DataManager implements IDataSource{
     private RemoteDataSource remoteDataSource;
     private LocalDataSource localDataSource;
-
+    private RemoteCallBack mRemoteCallBack;
     public static Example getExample() {
         return example;
     }
@@ -34,7 +34,7 @@ public class DataManager implements IDataSource{
 
 
     @Override
-    public void getRemoteLocationData(String type, LatLng ll, int radius) {
-        remoteDataSource.getRemoteLocationData(type, ll, radius);
+    public void getRemoteLocationData(String type, LatLng ll, int radius, RemoteCallBack remoteCallBack) {
+        remoteDataSource.getRemoteLocationData(type, ll, radius, remoteCallBack);
     }
 }

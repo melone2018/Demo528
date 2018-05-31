@@ -17,6 +17,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.rjt.android.demomvptesting.data.model.bank.Result;
 import com.rjt.android.demomvptesting.data.repository.DataManager;
+import com.rjt.android.demomvptesting.data.repository.IDataSource;
 import com.rjt.android.demomvptesting.data.repository.local.LocalDataSource;
 import com.rjt.android.demomvptesting.data.repository.remote.RemoteDataSource;
 
@@ -24,36 +25,11 @@ import java.util.List;
 
 public class SimpleMapPresenter implements SimpleMapContract.IPresenter {
     private Context context;
-    LocationManager locationManager;
     DataManager dataManager;
     String newQuery = "";
     GoogleMap googleMap;
     Location mLocation;
-    private final LocationListener mLocationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            mLocation = location;
-            LatLng currentLoc = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-            Log.i("CurrentLoc", currentLoc.latitude +" " + currentLoc.longitude);
-            dataManager.getRemoteLocationData(newQuery, currentLoc, 5000);
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 16));
-        }
 
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
     public SimpleMapPresenter(Context context) {
         this.context = context;
         dataManager = DataManager.getDataManager(new RemoteDataSource(), new LocalDataSource());
@@ -65,29 +41,20 @@ public class SimpleMapPresenter implements SimpleMapContract.IPresenter {
     }
 
     @Override
-    public void setOnMapReady(String query, GoogleMap googleMap) {
+    public void setOnMapReady(String query, GoogleMap googleMap, LatLng ll) {
         Log.i("MapPresenter", "setOnMapReady: " + query);
         this.googleMap = googleMap;
-        zoomToCurrentLocation(context, googleMap);
-        newQuery = query;
-    }
-
-
-    public void zoomToCurrentLocation(Context context, GoogleMap googleMap) {
-        try {
-            if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
-                            PackageManager.PERMISSION_GRANTED) {
-                googleMap.setMyLocationEnabled(true);
-                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-            } else {
-                Toast.makeText(context, "Error in permission", Toast.LENGTH_LONG).show();
+        googleMap.clear();
+        dataManager.getRemoteLocationData(query, ll, 5000, new IDataSource.RemoteCallBack() {
+            @Override
+            public void onSuccess() {
+                Log.i("drawMarker", dataManager.getExample().getResults().size()+"");
+//                setMarkers();
             }
-            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 50, 5, mLocationListener);
-        } catch (SecurityException e) {
-            e.printStackTrace();
+        });
+        if(dataManager.getExample()!=null) {
+            Log.i("MapPresenter", dataManager.getExample().getResults().size() + "");
+            setMarkers();
         }
     }
 

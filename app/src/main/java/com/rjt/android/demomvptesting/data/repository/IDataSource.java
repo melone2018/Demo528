@@ -8,9 +8,9 @@ public interface IDataSource {
     }
 
     interface RemoteCallBack{
-
+        public void onSuccess();
     }
 
-    void getRemoteLocationData(String type, LatLng ll, int radius);
+    void getRemoteLocationData(String type, LatLng ll, int radius, RemoteCallBack remoteCallBack);
 
 }
